@@ -33,5 +33,5 @@ elif [ $# -gt 1 ]; then
 
 #Normal usage of command
 else
-	python $CARROW_CODEBASE/python_scripts/carrow_update_v1_1.py $CARROW_CODEBASE $USER $@
+	python $CARROW_CODEBASE/python_scripts/carrow_update_v1_3.py $CARROW_CODEBASE $USER $@
 fi
