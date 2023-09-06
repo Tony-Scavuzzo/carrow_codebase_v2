@@ -1,0 +1,64 @@
+#!/bin/sh
+
+# Edit History
+# version Initials    Date            Summary
+# 1.0     ARS         10-Jul-2023     Shell script simply establishes environment and runs sterimol
+# 1.1     ARS         10-Jul-2023     added automated filenaming and updated path
+# 1.2     ARS         25-Jul-2023     added help manual
+
+manual="
+	sterimol manual
+	Usage: sterimol -a1 atom_1 -a2 atom_2 -radii radius_model
+	example: sterimol -a1 5 -a2 7 -radii bondi
+
+	This is a modified version of Prof. Bobby Paton's sterimol python script.
+	The original script allows for the calculation of sterimol descriptors of organic substituents.
+	The only modification is to allow for analysis of .xyz files for compatibility with Orca.
+
+	atom_1 and atom_2 define the bond axis of the substituent, in the direction of 1 -> 2.
+	Two radius models are available: 'cpk' and 'bondi'.
+	This shell script launches sterimol on all applicable files in the working directory and
+	saves the results to one .out file.
+	If there is only one applicable file, it will be saved to file_sterimol.out.
+	If there is more than one applicable file, it will be saved to sterimol.out.
+
+	For more information, see the documentation stored at $CARROW_CODEBASE/Sterimol-master/.
+"
+
+#Prints help manual if "help" is passed as any part of argument
+if [[ $* == *"help"* ]]; then
+	echo -e "$manual"
+
+#Normal usage of command
+#Note that no error handling is attempted
+else
+	#establish environment
+	#OpenMM is a module for molecular mechanics. More importantly, it contains the Numpy library, which sterimol requires.
+	PYTHONPATH=$PYTHONPATH:$CARROW_BIN/Sterimol-master/sterimol
+	export PYTHONPATH
+	module load OpenMM
+	
+	# Count the number of arguments with valid extensions
+	count=0
+	file_arg=""
+	
+	# regular expression checking for .xyz, .gjf, .com, .out, and .log files
+	# stores count to decide how to name the file
+	# stores file_arg in case count = 1
+	for arg in "$@"; do
+		if [[ "$arg" =~ \.(xyz|gjf|com|out|log)$ ]]; then
+			count=$((count + 1))
+			file_arg="$arg"
+		fi
+	done
+	
+	# Check if exactly one argument has a valid extension and names outfile accordingly
+	if [ $count -eq 1 ]; then
+		output_file="${file_arg%.*}_sterimol.out"
+	else
+		output_file="sterimol.out"
+	fi
+	
+	# Execute the Python module and redirect the output to the modified file
+	python -m sterimol "$@" > "$output_file"
+fi

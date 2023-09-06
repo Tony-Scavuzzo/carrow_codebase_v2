@@ -1,0 +1,12 @@
+# Settings for removing a negative frequency from an optimization
+# These settings use a quantum mechanical hessian and tight optimization criteria to better find the minimum
+# These settings also use a finer integration grid and a finer COSX grid, which arguably change the level of theory
+# These settings should be used as a last resort, and if used, the entire project should be reevaluated.
+
+! B3LYP D3 def2-SVP RIJCOSX autoaux opt freq TightOpt Grid5 GridX6 NoFinalGrid
+%pal NPROCS 12 end
+%geom
+	Calc_Hess true
+	Recalc_Hess 20
+	#NumHess true
+end

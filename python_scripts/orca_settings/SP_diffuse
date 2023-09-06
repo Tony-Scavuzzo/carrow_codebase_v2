@@ -1,0 +1,6 @@
+# default settings for a batch single point job including anions
+# These settings are appropriate for organics, organometallics, and contain augmented orbitals to handle anions.
+# Take note of the use of RIJCOSX and autoaux - these keywords effectively change the level of theory.
+
+! B3LYP D3 ma-def2-TZVPP RIJCOSX autoaux CPCM(Toluene)
+%PAL NPROCS 16 END 

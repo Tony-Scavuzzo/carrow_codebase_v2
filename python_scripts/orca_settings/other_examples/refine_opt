@@ -1,0 +1,10 @@
+# Settings for removing a negative frequency from an optimization
+# These settings use a quantum mechanical hessian and tight optimization criteria to better find the minimum
+
+! B3LYP D3 def2-SVP RIJCOSX autoaux opt freq TightOpt
+%pal NPROCS 12 end
+%geom
+	Calc_Hess true
+	Recalc_Hess 20
+	#NumHess true
+end

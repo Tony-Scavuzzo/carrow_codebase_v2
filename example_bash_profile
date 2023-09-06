@@ -1,0 +1,19 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+
+# Directs Carrow lab members to our help manual
+manual_string="
+----------------------------------------------------------
+   For the Carrow lab help manual, enter 'carrow_help'.
+----------------------------------------------------------
+"
+
+echo -e "$manual_string"
+carrow_update
+python /project/carrow/codebase/python_scripts/initialize.py

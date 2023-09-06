@@ -1,0 +1,24 @@
+{
+    "updates": [
+        "There is now a way to notify carrow lab members in the shell when commands are updated in some way",
+        "If you are reading this, then your .bash_profile has been successfully updated to recieve notifications!",
+        "We can now add new updates using carrow_update update_file!",
+        "Some new ways arguments are handled (I have my reasons):\n   for scans, use '-scan' instead of 'scan' (e.g. launch_orca_4 -scan)\n   for the bash cheatsheet, use '-bash' instead of 'bash' (e.g. carrow_manual -bash)\nNew users are automatically added to carrow_update log after carrow_update is added to .bash_log\nDocumentation (carrow_manual, each function's -help manual, README) has been updated",
+        "test_launch_orca_4 is extensively reformatted and may be broken\nit would probably be best to use launch_orca_4 until further notice",
+        "A new command has been added to the codebase!\nUse 'load_orca_4' to load the orca 4 module\nthis is useful for interactive sessions, like orbital plotting",
+        "test_launch_orca_4 and test_process_orca_4 are both pushed to launch_orca_4 and process_orca_4",
+        "launch_orca_4 now supports batch scans -\nwhen running several scans of the same type\n(e.g. several C-C scans from 1 to 3 in steps of 0.1)\nuse the -bs or -batchscan flag to copy scan parameters\nfrom one file to the other",
+        "launch_orca_4 now supports scans of angles and dihedrals\nduring atom selection, simply specify 2, 3, or 4 atoms\nto imply distance, angle, and dihedral scans, respectively",
+        "process_orca_4 now performs analysis of scan data",
+        "A new command has been added!!\nuse `orca_postmortem filename.out` to extract useful troubleshooting data\nfrom failed geometry optimizations. See the manual for more info!",
+        "New version of test_process_orca_4\nThis version should be fully functional, and addresses minor bugs",
+        "New version of test_orca_postmortem. This version should be fully functional,\nand now includes data regarding SCF failures as well as addressing minor bugs.",
+        "The load_orca_4 command was deleted, as I realized it didn't work\ninstead, use `carrow_help -bash` for documentation on loading Orca",
+        "process_orca_4 has been updated - this should fix several minor bugs.\norca_postmortem has been updated - this should fix several minor bugs\nand now records the most recent SCF data\ncarrow_update has also been updated, and has new behavior:\nuse `carrow_update n`, where n is an integer, to print the n most\nrecent updates.\nall test codes have been deleted now that all codes are in their\nmost recent version."
+    ],
+    "users": {
+        "aplooby": 4,
+        "jegarza6": 3,
+        "arscavuz": 15
+    }
+}

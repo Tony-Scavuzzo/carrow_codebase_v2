@@ -1,0 +1,44 @@
+#!/bin/sh
+
+# Edit History
+# version Initials    Date            Summary
+# 1.0     ARS         16-Aug-2023     Shell script simply launches postmortem.py
+# 2.0     ARS         29-Aug-2023     Updated to orca_postmortem_v2_0.py. Checks arg1 in python instead of here now to accomodate -v
+
+error_message="Error: invalid arguments provided.
+Usage: orca_postmortem outfile.out
+Use 'process_orca_4 -help' for help."
+
+manual="
+	orca_postmortem manual
+
+	Usage: orca_postmortem outfile.out
+
+	This script will analyze the contents of an outfile
+	and compile usefule information for troubleshooting
+	failed geometry optimizations. This information
+	includes the number of geometry iterations performed,
+	the number of SCF steps per geometry iteration, the
+	various criteria used to quantify convergence,the 
+	tolerance for those criteria, the negative
+	vibrations in each calculated hessian, and the data
+	from the last SCF performed.
+
+	for more information, you should read the last few
+	lines of the outfile (e.g. tail -n 50 outfile.out)
+	as well as read the slurm out file
+"
+#Prints help manual if "help" is any part of arguments
+if [[ "$*" == *"help"* ]]; then
+	echo "$manual"
+
+#Normal usage of script
+
+elif [ $# -eq 1 ]; then
+python $CARROW_CODEBASE/python_scripts/orca_postmortem_v2_0.py $1
+
+#Prints error message if too many arguments are provided or an invalid argument is provided
+else
+	echo "$error_message"
+	exit 1
+fi

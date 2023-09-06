@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Edit History
+# version Initials    Date            Summary
+# 1.0     ARS         04-Jul-2023     Shell script simply runs carrow_update
+# 1.1     ARS         04-Jul-2023     Adds new users to the json file if they are not found
+
+error_message="Error: Too many arguments provided.
+Usage: carrow_update file_name
+Use 'carrow_update -help' for help"
+
+manual="
+	carrow_update manual
+	Usage: carrow_update		#prints unread notifications
+	Usage: carrow_update file_name  #adds a new update to the records
+
+	This script allows carrow members to notify other members upon login when the codebase is updated.
+	If no argument is passed, the update notifications are printed.
+	By updating a user's .bash_profile to include carrow_update, this will occur upon login.
+	By using carrow_update filename, a new update is saved to carrow_update_records.json
+	This .json file also saves a record of which notifications each user has seen.
+	If a user has never used the script before, it automatically adds them to the .json file.
+"
+
+#Prints help manual if "help" is passed as any part of argument
+if [[ $* == *"help"* ]]; then
+	echo -e "$manual"
+
+#Prints error message if too many arguments are passed and none are "help"
+elif [ $# -gt 1 ]; then
+        echo "$error_message"
+        exit 1
+
+#Normal usage of command
+else
+	python $CARROW_CODEBASE/python_scripts/carrow_update_v1_1.py $CARROW_CODEBASE $USER $@
+fi

@@ -1,0 +1,12 @@
+# default settings for a batch optimization of transition states
+# These settings are appropriate for organics, organometallics, cations, and neutral molecules.
+# Take note of the use of RIJCOSX and autoaux - these keywords effectively change the level of theory.
+# Because TS calculations are more tricky, the QM hessian is calculated and recalculated every 20 steps
+
+! B3LYP D3 def2-SVP RIJCOSX autoaux optTS freq
+%pal NPROCS 12 end
+%geom
+	Calc_Hess true
+        Recalc_Hess 20
+	#NumHess true
+end

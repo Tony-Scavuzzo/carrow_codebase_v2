@@ -1,0 +1,24 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+
+# User specific environment
+
+CARROW_CODEBASE="/project/carrow/codebase"
+export CARROW_CODEBASE
+
+USER_EMAIL="user@email.com"
+export USER_EMAIL
+
+PATH="$HOME/.local/bin:$HOME/bin:$CARROW_CODEBASE:$PATH"
+export PATH
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+# User specific aliases and functions
+#formats squeue for longer job names
+export SQUEUE_FORMAT="%.18i %.9P %.30j %.8u %.2t %.10M %.6D %.20R"

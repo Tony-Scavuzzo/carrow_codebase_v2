@@ -1,0 +1,100 @@
+#!/bin/sh
+
+# Edit History
+# version Initials    Date            Summary
+# 1.0     ARS         25-Jun-2023     Shell script simply launches process_orca_4.py
+# 1.1     ARS         11-Jul-2023     added file organization
+# 1.2     ARS         19-Jul-2023     added more filetypes to file organization and added an error file for this script
+# 1.3     ARS         21-Jul-2023     automatically runs neg_freq file if it exists
+# 1.4     ARS         24-Jul-2023     added manual and updated error message and updated path name
+# 1.5     ARS         26-Jul-2023     also moves atom46 files
+# 1.6     ARS         27-Jul-2023     detects if a scan was performed and organizes files accordingly. Also moves *.cpcm files
+# 1.7     ARS         31-Jul-2023     compiles .relaxscanact.dat results with process_orca_4_v3_0.py, modified how scan data is organized
+# 1.8     ARS         28-Aug-2023     updated to process_orca_4_v3_1.py
+# 1.9     ARS         29-Aug-2023     updated to process_orca_4_v4_0.py, no longer moves slurm.out files
+
+error_message="Error: invalid arguments provided.
+Usage: process_orca_4
+Use 'process_orca_4 -help' for help."
+
+manual="
+	process_orca_4 manual
+
+	Usage: process_orca_4
+
+	This command processes orca 4.2.1 .out files and creates a .csv file summarizing the results.
+	For each .out file, the following are tallied:
+	molecule name, command line, job type, freq?, cost, E, H, G, neg freqs, geom converged?
+	This command creates a single .csv file with every result.
+
+	The command line column records the orca commands passed on the ! line of the .inp file.
+	The job type column records whether the job is an optimization (opt), transition state
+	optimization (optTS), or a single point calculation (SP).
+	The freq? column records whether the freq command was passed on the ! line of the .inp file,
+	which will result in E, H, G, and neg freq data.
+	The cost column records the computational cost (in cpu*hrs) of the calculation.
+	The E column records the electronic energy of the calculation.
+	This will include the solvent correction, if there is any.
+	The H Column records the enthalpy of the calculation.
+	The G column records the Gibbs free energy of the calculation.
+	The geom converged? column records whether the geometry is confirmed to be converged.
+
+	In the event of a scan job, freq?, E, H, G, neg freqs, and geom converged? are skipped.
+	Instead, the scan data (pulled from the relaxscanact.dat file) is tabulated and analyzed.
+	The energy relative to the lowest point in kcal/mol is calculated,
+	and the minima, maxima, and edge structures are identified.
+	In addition, the .allxyz file is edited and renamed to be maestro compatible,
+	as well as to ensure that the min, max, and edge structures are clearly and automatically
+	labeled upon loading into maestro.
+
+	This command also creates a shell script for visualizing the negative frequencies
+	If the number of negative frequencies is small,
+	the script is automatically executed on the head node.
+	If the number of negative frequencies is excessive,
+	the a SLURM file is created, which should be run with sbatch.
+
+	Lastly, this command organizes the job files for convenience.
+"
+
+#Normal usage of command
+if [ $# -eq 0 ]; then
+	# creates subdirectories if they don't exist
+	mkdir -p inputs
+	mkdir -p job_files
+
+	#moves atom46 files immediately to avoid problems
+	mv *atom46* job_files/ 2>/dev/null
+
+	# creates .csv file summarizing results and .sh file for negative frequencies
+	python $CARROW_CODEBASE/python_scripts/process_orca_4_v4_0.py
+
+	#runs the .sh file created in previous step. The .sh file will throw an error if it predicts itself to be excessively large.
+	if [ -f "neg_freqs.sh" ]; then
+		bash neg_freqs.sh
+	fi
+
+	# detects scan jobs and moves all .xyz files and .gbw files to scan_data/ then moves .all.xyz data back
+	if [ -n "$(find . -maxdepth 1 -type f -name "*scanact.dat" -o -name "*scanscf.dat")" ]; then
+		mkdir -p scan_data
+		mv *{xyz,.gbw,.relaxscanscf.dat,.relaxscanact.dat} scan_data/ 2>/dev/null
+                mv scan_data/*.all*.xyz . 2>/dev/null
+	fi
+
+	# moves files by end of filename to desired subdirectories
+	# suppresses errors from attempting to move nonexistant files
+	mv *.engrad *.gbw *.hess *.opt *.prop *.txt *_trj.xyz *.scfp *.cpcm $(basename "$PWD").sh job_files/ 2>/dev/null
+	mv *.inp *_in.xyz inputs/ 2>/dev/null
+
+# prints version if requested
+elif [ $# -eq 1 ] && [ "$1" = "-v" -o "$1" = "-version" ]; then
+	python $CARROW_CODEBASE/python_scripts/process_orca_4_v4_0.py $1
+
+#Prints help manual if "help" is any part of arguments
+elif [[ "$*" == *"help"* ]]; then
+	echo "$manual"
+
+#Prints error message if arguments are passed and none are "help"
+else
+	echo "$error_message"
+	exit 1
+fi

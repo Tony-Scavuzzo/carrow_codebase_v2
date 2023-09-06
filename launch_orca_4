@@ -1,0 +1,80 @@
+#!/bin/bash
+
+# Edit History
+# version Initials    Date            Summary
+# 1.0     ARS         25-Jun-2023     Shell script simply launches launch_orca_4.py
+# 1.1     ARS         21-Jul-2023     added help manual and updated argument list for launch_orca_4_v3_0.py
+# 1.2     ARS         23-Jul-2023     modified help command to trigger if 'help' is any of the arguments passed and updated path name
+# 1.3     ARS         26-Jul-2023     updated to launch_orca_4_v3_1.py
+# 1.4     ARS         31-Jul-2023     updated to launch_orca_4_v4_0.py
+# 1.5     ARS         01-Aug-2023     updated to launch_orca_4_v4_1.py, added -w as an optional argument, adjusted scan flag from scan to -scan
+# 1.6     ARS         13-Aug-2023     updated to launch_orca_4_v5_1.py, reformatted '-w', and '-write' flags
+# 1.7     ARS         15-Aug-2023     updated to launch_orca_4_v5_1.py, now passes all arguments to python script and validation happens there.
+
+error_message="Error: Too many arguments provided.
+Usage: launch_orca_4 [dd:hh:mm:ss] [nM] [settings_file] [-scan] [-write]
+Use 'launch_orca_4 -help' for help"
+
+manual="
+        launch_orca_4 manual
+
+        Usage: launch_orca_4 [dd:hh:mm:ss] [nM] [settings_file] [-scan] [-batchscan] [-write]
+
+        This script automates the creation of batch orca jobs
+        It operates on every .xyz file in the working directory.
+        Each file must be formatted as {name}_{charge}_{spin}.xyz
+        Files formatted as {name}_{charge}_{spin}_in.xyz are also supported
+        For negative charges, use 'm' or 'n' (e.g. methoxide_m1_1.xyz)
+
+       	This script takes three optional arguments: job time, memory per core,
+	and a settings file, and two optional flags: -scan (or -s), and -write (or -w)
+
+	The job time should be formatted as dd:hh:mm:ss and
+        defaults to 00:01:00:00 if none is provided.
+
+	The memory per core should be provided in megabytes followed
+        by an 'M' (e.g. 2000M). If none is provided, this script estimates
+        memory demands based on the contents of the .xyz files.
+
+	The settings file can be specified as either a path or a file
+        in the working directory. This file should contain a
+        descriptive comment and the orca keywords that will be used in
+        the batch job. If none is provided, an interactive menu will
+        appear suggesting default settings which are found at
+        /project/carrow/bin/python_scripts/orca_settings/.
+
+	The -scan or -s flag will launch an interactive session to help
+        set up scan calculations.
+
+	the -batchscan or -bs flag will launch an interactive session assuming
+	all scans are of the same type and scanning the same range
+	e.g. 5 C-C bond scans from 1.0 to 2.0 in increments of 0.1
+
+	The -write or -w flag writes, but does not execute, the orca job.
+"
+
+#Prints help manual if "help" is passed as any part of argument
+if [[ "$*" == *"help"* ]]; then
+	echo "$manual"
+
+#Normal usage of command
+else
+	write_option=0
+	version_option=0
+
+	for arg in "$@"; do
+		if [ "$arg" == "-write" ] || [ "$arg" == "-w" ]; then
+			write_option=1
+        	elif [ "$arg" == "-version" ] || [ "$arg" == "-v" ]; then
+			version_option=1
+    		fi
+	done
+
+	# loads OpenMM environment for Numpy package
+        module load OpenMM
+	python $CARROW_CODEBASE/python_scripts/launch_orca_4_v5_3.py $USER_EMAIL $CARROW_CODEBASE $@
+
+	if [ $write_option -eq 0 ] && [ $version_option -eq 0 ]; then
+	sbatch ${PWD##*/}.sh
+	fi
+fi

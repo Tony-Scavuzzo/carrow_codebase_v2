@@ -1,0 +1,6 @@
+# default settings for a batch single point job
+# These settings are appropriate for organics, organometallics, cations, and neutral molecules.
+# Take note of the use of RIJCOSX and autoaux - these keywords effectively change the level of theory.
+
+! B3LYP D3 def2-TZVPP RIJCOSX autoaux CPCM(Toluene)
+%PAL NPROCS 16 END 

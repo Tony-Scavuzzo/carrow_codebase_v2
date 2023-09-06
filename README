@@ -1,0 +1,86 @@
+1) Introduction
+	Welcome to the Carrow Lab codebase!
+	This codebase contains bash and python scripts for automating computational chemistry research.
+	It also contains several files containing the Orca settings for default levels of theory in the Carrow Lab.
+
+	For the codebase help manual, use 'carrow_help'.
+	For help with a given command, pass 'help' as an argument.
+
+2) Installation
+	For this codebase to work properly, install it in any desired directory.
+	Ensure that all commands are configured as executables using 'chmod +x'.
+	e.g. chmod +x launch_orca_4
+	Then, create/update the CARROW_CODEBASE, USER_EMAIL, and PATH variables with the following commands:
+
+	```
+	CARROW_CODEBASE="/project/carrow/codebase"
+	export CARROW_CODEBASE
+
+	USER_EMAIL="user@email.com"
+	export USER_EMAIL
+	
+	PATH="$CARROW_CODEBASE:$PATH"
+	export PATH
+	```
+
+	This can be best accomplished in the user's .bashrc file.
+	For an example of how this can be done (as well as other suggested edits), see example_bashrc.
+
+	For carrow_update to work, the following line must be added to the user's .bash_profile:
+	```
+	carrow_update
+	```
+	For an example of how this can be done (as well as other suggested edits), see example_bash_profile.
+
+3) Maintenance
+	I (ARS) have decided getting the Carrow lab on Github is unrealistic. As such, these are the standards for code maintenance:
+	
+	i)   Each script contains a string dedicated to version control.
+	     As this codebase is curated, authors should document their changes.
+
+	ii)  All python codes are saved in python_scripts/.
+	     When editing existing code, always start by copying the existing code to a new version number
+             e.g. cp launch_orca_4_v2_1 launch_orca_4_v2_2.py
+	     Make all edits to the new version
+
+	iii) All shell scripts have a default script (e.g. launch_orca_4) and a test script (e.g. test_launch_orca_4).
+	     When testing new python codes or new shell scripts, always edit the test script, not the default.
+	     
+	iv)  Only after code has been extensively tested can the default code be updated.
+	     At this point, move the existing default code to legacy_shells/ 
+	     e.g. mv launch_orca_4 legacy_shells/launch_orca_4_v1_2
+	     Make sure to use chmod -x to remove executable permissions from legacy shell scripts
+	     e.g. chmod -x launch_orca_4_v1_2
+	     Then, rename the test shell to the default shell
+	     e.g. mv test_launch_orca_4 launch_orca_4
+	     Lastly, copy the new default shell to a test shell
+	     e.g. cp launch_orca_4 test_launch_orca_4
+	
+	v)   Write a short file describing the updates performed and then run carrow_update filename to update the group
+
+	Remember: Other people rely on a working, well documented codebase!
+	Not following these steps could result in serious productivity problems in the Carrow lab!
+
+4) Writing Style
+	This section is definitely still crude, but it would be good to have a consistent code/writing style
+
+	i)   Keep the number of languages to a minimum, as this facilitates entry by non-computer scientists
+		a) Python should be used for most logic
+		b) Bash should be used for most file handling and launching python scripts
+		c) JSON files should be used for storing data
+
+	ii)  When formatting arguments:
+		a) Arguments should be passed as plaintext (e.g. launch_orca_4 1:00:00, as opposed to t=1:00:00 or -t 1:00:00)
+		b) Allow arguments (and flags) to be passed in any order. For this reason, contextually infer which argument is which
+		c) Ensure each argument is formatted distinctly (e.g. for memory, use 1000M, not 1000, which is ambiguous)
+		
+	iii) When formatting flags:
+		a) flags should always begin with - (e.g. launch_orca_4 -scan as opposed to launch_orca_4 scan).
+		b) Flags are distinct from arguments in that they are always the same.
+			-scan and -write are flags because they simply instruct the python script to operate differently
+			1:00:00 is an argument because the amount of time can change from job to job
+		c) Special case: document the help flag *as if* it is -help, but code such that the manual is echoed
+			if 'help' is any part of their argument (e.g. 'carrow_update help', 'carrow_update -help', and
+			'carrow_update ohhelpdeargodnohowdoesanyofthiswork adsfjoadfjoidasjfoiajdfiojaosd' all echo the
+			manual for carrow_update)
+		d) Allow flags (and arguments) to be passed in any order.
